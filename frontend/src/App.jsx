@@ -1,14 +1,91 @@
-// src/App.jsx
+// src/App.jsx - FULL UPDATED VERSION
+// Copy-paste entire file (keeps your navbar + splash + adds home/xG routes)
+
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Loader from './Components/Loader';
 import LeagueSelector from './pages/LeagueSelector';
-
-// adjust path if your file is in src/pages/PlayersHomePage.jsx
-
 import PlayersHomePage from './pages/PlayersHomePage';
 import PlayerPage from './pages/PlayerPage';
+// TEMP imports - replace with real pages later
+const HomePage = () => (
+  <div style={{padding: '1rem 2rem 0 2rem', textAlign: 'center', minHeight: '80vh'}}>
+              
 
+    <h1 style={{
+  fontSize: 'clamp(3rem, 8vw, 6rem)',
+  fontWeight: 900,
+  background: 'linear-gradient(135deg, #ffd700 0%, #ffed4a 50%, #ffa500 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+  textShadow: '0 0 30px rgba(255,215,0,0.5)',
+  letterSpacing: '-0.02em',
+  marginBottom: '4rem',
+  fontFamily: 'system-ui, -apple-system, sans-serif'  // Premium system font
+}}> xG Analyzer</h1>
+
+    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', maxWidth: '1000px', margin: '0 auto'}}>
+      <Link to="/leagues" style={{
+  background: `
+    linear-gradient(rgba(80, 64, 64, 0.9), rgba(234,88,12,0.9)),
+    url("/Box_bg.png") center/cover
+  `,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  padding: '3rem',
+  borderRadius: '20px',
+  color: 'white',
+  textDecoration: 'none',
+  boxShadow: '0 20px 40px rgba(220,38,38,0.4)',
+  position: 'relative',
+  overflow: 'hidden'
+}}>
+  {/* Dark overlay for text readability */}
+  <div style={{
+    position: 'absolute', 
+    top: 0, left: 0, right: 0, bottom: 0,
+    background: 'rgba(0,0,0,0.4)', 
+    zIndex: 1,
+    borderRadius: '20px'
+  }}></div>
+  <div style={{position: 'relative', zIndex: 2}}>
+    <h2 style={{margin: '0 0 1rem 0', fontSize: '2rem'}}> League Stats</h2>
+    <p style={{margin: 0, fontSize: '1.1rem'}}>Premier League, LaLiga, Bundesliga<br/>xG analytics</p>
+  </div>
+</Link>
+
+      <Link to="/xg-calculator" style={{
+        background: 'linear-gradient(45deg, #059669, #10b981)', 
+        padding: '3rem', borderRadius: '20px', color: 'white', textDecoration: 'none',
+        boxShadow: '0 20px 40px rgba(5,150,105,0.3)'
+      }}>
+        <h2 style={{margin: '0 0 1rem 0'}}>⚽ Manual xG Calculator</h2>
+        <p>Shot distance, angle, type → Instant xG<br/>Interactive pitch visualizer</p>
+      </Link>
+    </div>
+  </div>
+);
+const XGCalculator = () => (
+  <div style={{padding: '4rem 2rem', textAlign: 'center'}}>
+    <h1 style={{fontSize: '2.5rem'}}>🔥 xG Calculator</h1>
+    <p style={{fontSize: '1.2rem', marginBottom: '3rem'}}>Coming soon: Interactive pitch + model prediction!</p>
+    <div style={{
+      height: '500px', 
+      background: 'linear-gradient(135deg, #228B22 0%, #166534 100%)', 
+      margin: '0 auto', 
+      borderRadius: '30px',
+      maxWidth: '800px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '2rem',
+      boxShadow: '0 30px 60px rgba(0,0,0,0.5)'
+    }}>
+      🎯 Click pitch for shots<br/>Distance + Angle → xG Model
+    </div>
+  </div>
+);
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -16,31 +93,27 @@ function App() {
   useEffect(() => {
     const t = setTimeout(() => {
       setShowSplash(false);
-    }, 3000); // 3 seconds
-
+    }, 3000);
     return () => clearTimeout(t);
   }, []);
 
   if (showSplash) {
     return (
       <div className="splash-screen">
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '1rem',
-            color: '#ffffffff',
-            textAlign: 'center',
-          }}
-        >
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '1rem',
+          color: '#ffffffff',
+          textAlign: 'center',
+        }}>
           <div>
             <h1 style={{ margin: 0, fontSize: '1.5rem' }}>
               LOADING SQUAD...
             </h1>
           </div>
-
           <Loader />
         </div>
       </div>
@@ -49,7 +122,7 @@ function App() {
 
   return (
     <div>
-      {/* Man City header bar */}
+      {/* Your Man City header - ENHANCED */}
       <header style={{
         background: 'linear-gradient(90deg, #ffffffff 0%, #0057B8 100%)',
         height: '70px',
@@ -62,37 +135,25 @@ function App() {
         top: 0,
         zIndex: 100,
       }}>
-        {/* City logo - replace with your actual logo */}
-        <img 
-          src="/Logo.svg" 
-          alt="Man City" 
-          style={{ height: '45px',border:5 }}
-        />
-        
-        {/* Nav links */}
+        <img src="/Logo.svg" alt="Man City" style={{ height: '45px', border: 5 }} />
         <nav style={{ display: 'flex', gap: '1.5rem', marginLeft: 'auto' }}>
-          <Link to="/" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>News</Link>
-          <Link to="/fixtures" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Fixtures</Link>
-          <Link to="/tickets" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Tickets</Link>
-          <Link to="/shop" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Shop</Link>
+          <Link to="/" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}>🏠 Home</Link>
+          <Link to="/leagues" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>🏆 Leagues</Link>
+          <Link to="/xg-calculator" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>⚽ xG Calc</Link>
           <Link to="/players" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>Players</Link>
-          <Link to="/club" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500, fontSize: '0.95rem' }}>Club</Link>
+          <Link to="/club" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}>Club</Link>
         </nav>
-
-        {/* Right side: EN | Sign In */}
         <div style={{ display: 'flex', gap: '1rem', color: 'Ivory', fontSize: '0.85rem' }}>
           <span>EN</span>
           <button style={{ background: 'none', border: 'none', color: 'Ivory', cursor: 'pointer' }}>Sign In</button>
         </div>
       </header>
 
-      {/* Main content */}
       <main style={{ padding: '1.5rem' }}>
         <Routes>
-
-          <Route path="/" element={<LeagueSelector />} />
-         { /* <Route path="/" element={<PlayersHomePage />} />*/  }
-
+          <Route path="/" element={<HomePage />} />
+          <Route path="/leagues" element={<LeagueSelector />} />
+          <Route path="/xg-calculator" element={<XGCalculator />} />
           <Route path="/players/:playerId" element={<PlayerPage />} />
         </Routes>
       </main>

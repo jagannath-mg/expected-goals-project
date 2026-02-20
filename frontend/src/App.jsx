@@ -4,7 +4,9 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Loader from './Components/Loader';
+import FixturesPage from './pages/FixturesPage';
 import LeagueSelector from './pages/LeagueSelector';
+import MatchDetails from './pages/MatchDetails';
 import PlayersHomePage from './pages/PlayersHomePage';
 import PlayerPage from './pages/PlayerPage';
 // TEMP imports - replace with real pages later
@@ -151,10 +153,13 @@ function App() {
 
       <main style={{ padding: '1.5rem' }}>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/leagues" element={<LeagueSelector />} />
-          <Route path="/xg-calculator" element={<XGCalculator />} />
-          <Route path="/players/:playerId" element={<PlayerPage />} />
+          <Route path="/" element={<HomePage />} />  
+          <Route path="/leagues" element={<LeagueSelector />} /> 
+          <Route path="/:league/fixtures" element={<FixturesPage />} />
+         <Route path="/:league/fixtures/:matchId" element={<MatchDetails />} />
+          <Route path="/" element={<PlayersHomePage />} />
+
+          <Route path="/xg-calculator" element={<div><h1>xG Calculator Coming Soon.....</h1></div>} />
         </Routes>
       </main>
     </div>

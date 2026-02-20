@@ -6,7 +6,7 @@ const LeagueSelector = () => {
   const navigate = useNavigate();
 
   const handleSelect = (leagueId) => {
-    navigate(`/${leagueId}/players`);
+    navigate(`/${leagueId}/fixtures`);
   };
 
   return (

@@ -1,6 +1,6 @@
 // src/App.jsx - FULL UPDATED VERSION
 // Copy-paste entire file (keeps your navbar + splash + adds home/xG routes)
-
+import XGBackendCalculator from "./Components/XGBackendCalculator";
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Loader from './Components/Loader';
@@ -153,14 +153,15 @@ function App() {
 
       <main style={{ padding: '1.5rem' }}>
         <Routes>
-          <Route path="/" element={<HomePage />} />  
-          <Route path="/leagues" element={<LeagueSelector />} /> 
-          <Route path="/:league/fixtures" element={<FixturesPage />} />
-         <Route path="/:league/fixtures/:matchId" element={<MatchDetails />} />
-          <Route path="/" element={<PlayersHomePage />} />
+  <Route path="/" element={<HomePage />} />
+  <Route path="/players" element={<PlayersHomePage />} />
 
-          <Route path="/xg-calculator" element={<div><h1>xG Calculator Coming Soon.....</h1></div>} />
-        </Routes>
+  <Route path="/leagues" element={<LeagueSelector />} />
+  <Route path="/:league/fixtures" element={<FixturesPage />} />
+  <Route path="/:league/fixtures/:matchId" element={<MatchDetails />} />
+
+  <Route path="/xg-calculator" element={<XGBackendCalculator />} />
+</Routes>
       </main>
     </div>
   );

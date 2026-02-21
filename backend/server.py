@@ -1,25 +1,92 @@
+
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+import joblib
+import pandas as pd
+import xgboost as xgb
+
+app = Flask(__name__)
+CORS(app)
+
+# Load model (skip columns.pkl)
+model = joblib.load("XG_Model.pkl")
+
+# Extract feature names from model
+try:
+    feature_names = model.feature_names_in_
+except:
+    feature_names = list(model.get_booster().feature_names)
+print(f"Model features: {feature_names}")  # Debug: lists expected inputs
+
+@app.route('/features', methods=['GET'])
+def get_features():
+    return jsonify({
+        'numeric': ['minute', 'x', 'y', 'distance_to_goal', 'angle_to_goal'],
+        'categorical': ['body_part', 'shot_type'], 
+        'binary': ['under_pressure'],
+        'all_features': feature_names,
+        'importance': {name: float(val) for name, val in zip(feature_names, model.feature_importances_)}
+    })
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.json
+    sample = pd.DataFrame([data])
+    sample = pd.get_dummies(sample)  # Handle categoricals
+    sample = sample.reindex(columns=feature_names, fill_value=0)  # Match model order
+    
+    xg = model.predict_proba(sample)[0][1]
+    return jsonify({"xg": float(xg)})
+
+if __name__ == "__main__":
+    app.run(host='127.0.0.1', port=5000, debug=True)
+
+'''
+#NEWWWWWWWWWWWWW
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import joblib
 import pandas as pd
 
 app = Flask(__name__)
+CORS(app)
 
-# Load model + columns
+# 1. Load the model (which is actually a Pipeline)
+# Ensure the .pkl file is in the same folder as this script
 model = joblib.load("XG_Model.pkl")
-columns = joblib.load("model_columns.pkl")
 
 @app.route("/predict", methods=["POST"])
 def predict():
+    try:
+        data = request.json
+        
+        # 2. Convert incoming JSON to a DataFrame
+        # We use the raw labels ("Right Foot", "Open Play") because 
+        # the Pipeline handles the encoding internally.
+        sample_shot = pd.DataFrame([{
+            "minute": int(data.get('minute', 0)),
+            "x": float(data.get('x', 0)),
+            "y": float(data.get('y', 40)), # Default to center width if missing
+            "distance_to_goal": float(data.get('distance_to_goal', 0)),
+            "angle_to_goal": float(data.get('angle_to_goal', 0)),
+            "body_part": data.get('body_part', 'Right Foot'),
+            "shot_type": data.get('shot_type', 'Open Play'),
+            "under_pressure": int(data.get('under_pressure', 0))
+        }])
 
-    data = request.json
+        # 3. Predict using predict_proba
+        # [:, 1] gets the probability of the "Goal" class (1)
+        xg_probability = model.predict_proba(sample_shot)[:, 1][0]
+        
+        return jsonify({
+            "xg": float(xg_probability),
+            "status": "success"
+        })
 
-    sample = pd.DataFrame([data])
-    sample = pd.get_dummies(sample)
-    sample = sample.reindex(columns=columns, fill_value=0)
-
-    xg = model.predict_proba(sample)[0][1]
-
-    return jsonify({"xg": float(xg)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Running on 5000 to match your React fetch calls
+    app.run(host='127.0.0.1', port=5000, debug=True)
+    '''

@@ -1,61 +1,50 @@
-// src/App.jsx - FULL UPDATED VERSION
-// Copy-paste entire file (keeps your navbar + splash + adds home/xG routes)
-import XGBackendCalculator from "./Components/XGBackendCalculator";
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
+
+// 1. Imports from your Components folder
+import XGCalculator from "./Components/XGCalculator"; 
 import Loader from './Components/Loader';
+
+// 2. Imports from your Pages folder
 import FixturesPage from './pages/FixturesPage';
 import LeagueSelector from './pages/LeagueSelector';
 import MatchDetails from './pages/MatchDetails';
 import PlayersHomePage from './pages/PlayersHomePage';
 import PlayerPage from './pages/PlayerPage';
-// TEMP imports - replace with real pages later
+
+// 3. Local Page Components
 const HomePage = () => (
   <div style={{padding: '1rem 2rem 0 2rem', textAlign: 'center', minHeight: '80vh'}}>
-              
-
     <h1 style={{
-  fontSize: 'clamp(3rem, 8vw, 6rem)',
-  fontWeight: 900,
-  background: 'linear-gradient(135deg, #ffd700 0%, #ffed4a 50%, #ffa500 100%)',
-  WebkitBackgroundClip: 'text',
-  WebkitTextFillColor: 'transparent',
-  backgroundClip: 'text',
-  textShadow: '0 0 30px rgba(255,215,0,0.5)',
-  letterSpacing: '-0.02em',
-  marginBottom: '4rem',
-  fontFamily: 'system-ui, -apple-system, sans-serif'  // Premium system font
-}}> xG Analyzer</h1>
+      fontSize: 'clamp(3rem, 8vw, 6rem)',
+      fontWeight: 900,
+      background: 'linear-gradient(135deg, #ffd700 0%, #ffed4a 50%, #ffa500 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      textShadow: '0 0 30px rgba(255,215,0,0.5)',
+      letterSpacing: '-0.02em',
+      marginBottom: '4rem',
+      fontFamily: 'system-ui, -apple-system, sans-serif'
+    }}> xG Analyzer</h1>
 
     <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', maxWidth: '1000px', margin: '0 auto'}}>
       <Link to="/leagues" style={{
-  background: `
-    linear-gradient(rgba(80, 64, 64, 0.9), rgba(234,88,12,0.9)),
-    url("/Box_bg.png") center/cover
-  `,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  padding: '3rem',
-  borderRadius: '20px',
-  color: 'white',
-  textDecoration: 'none',
-  boxShadow: '0 20px 40px rgba(220,38,38,0.4)',
-  position: 'relative',
-  overflow: 'hidden'
-}}>
-  {/* Dark overlay for text readability */}
-  <div style={{
-    position: 'absolute', 
-    top: 0, left: 0, right: 0, bottom: 0,
-    background: 'rgba(0,0,0,0.4)', 
-    zIndex: 1,
-    borderRadius: '20px'
-  }}></div>
-  <div style={{position: 'relative', zIndex: 2}}>
-    <h2 style={{margin: '0 0 1rem 0', fontSize: '2rem'}}> League Stats</h2>
-    <p style={{margin: 0, fontSize: '1.1rem'}}>Premier League, LaLiga, Bundesliga<br/>xG analytics</p>
-  </div>
-</Link>
+        background: `linear-gradient(rgba(80, 64, 64, 0.9), rgba(234,88,12,0.9)), url("/Box_bg.png") center/cover`,
+        padding: '3rem',
+        borderRadius: '20px',
+        color: 'white',
+        textDecoration: 'none',
+        boxShadow: '0 20px 40px rgba(220,38,38,0.4)',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1, borderRadius: '20px' }}></div>
+        <div style={{position: 'relative', zIndex: 2}}>
+          <h2 style={{margin: '0 0 1rem 0', fontSize: '2rem'}}> League Stats</h2>
+          <p style={{margin: 0, fontSize: '1.1rem'}}>Premier League, LaLiga, Bundesliga<br/>xG analytics</p>
+        </div>
+      </Link>
 
       <Link to="/xg-calculator" style={{
         background: 'linear-gradient(45deg, #059669, #10b981)', 
@@ -68,26 +57,8 @@ const HomePage = () => (
     </div>
   </div>
 );
-const XGCalculator = () => (
-  <div style={{padding: '4rem 2rem', textAlign: 'center'}}>
-    <h1 style={{fontSize: '2.5rem'}}>🔥 xG Calculator</h1>
-    <p style={{fontSize: '1.2rem', marginBottom: '3rem'}}>Coming soon: Interactive pitch + model prediction!</p>
-    <div style={{
-      height: '500px', 
-      background: 'linear-gradient(135deg, #228B22 0%, #166534 100%)', 
-      margin: '0 auto', 
-      borderRadius: '30px',
-      maxWidth: '800px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: '2rem',
-      boxShadow: '0 30px 60px rgba(0,0,0,0.5)'
-    }}>
-      🎯 Click pitch for shots<br/>Distance + Angle → xG Model
-    </div>
-  </div>
-);
+
+// --- NOTE: THE DUPLICATE XGCALCULATOR FUNCTION WAS REMOVED FROM HERE ---
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -111,11 +82,7 @@ function App() {
           color: '#ffffffff',
           textAlign: 'center',
         }}>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.5rem' }}>
-              LOADING SQUAD...
-            </h1>
-          </div>
+          <h1 style={{ margin: 0, fontSize: '1.5rem' }}>LOADING SQUAD...</h1>
           <Loader />
         </div>
       </div>
@@ -124,7 +91,6 @@ function App() {
 
   return (
     <div>
-      {/* Your Man City header - ENHANCED */}
       <header style={{
         background: 'linear-gradient(90deg, #ffffffff 0%, #0057B8 100%)',
         height: '70px',
@@ -137,7 +103,7 @@ function App() {
         top: 0,
         zIndex: 100,
       }}>
-        <img src="/Logo.svg" alt="Man City" style={{ height: '45px', border: 5 }} />
+        <img src="/Logo.svg" alt="Man City" style={{ height: '45px' }} />
         <nav style={{ display: 'flex', gap: '1.5rem', marginLeft: 'auto' }}>
           <Link to="/" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}>🏠 Home</Link>
           <Link to="/leagues" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>🏆 Leagues</Link>
@@ -145,23 +111,17 @@ function App() {
           <Link to="/players" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>Players</Link>
           <Link to="/club" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}>Club</Link>
         </nav>
-        <div style={{ display: 'flex', gap: '1rem', color: 'Ivory', fontSize: '0.85rem' }}>
-          <span>EN</span>
-          <button style={{ background: 'none', border: 'none', color: 'Ivory', cursor: 'pointer' }}>Sign In</button>
-        </div>
       </header>
 
       <main style={{ padding: '1.5rem' }}>
         <Routes>
-  <Route path="/" element={<HomePage />} />
-  <Route path="/players" element={<PlayersHomePage />} />
-
-  <Route path="/leagues" element={<LeagueSelector />} />
-  <Route path="/:league/fixtures" element={<FixturesPage />} />
-  <Route path="/:league/fixtures/:matchId" element={<MatchDetails />} />
-
-  <Route path="/xg-calculator" element={<XGBackendCalculator />} />
-</Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/players" element={<PlayersHomePage />} />
+          <Route path="/leagues" element={<LeagueSelector />} />
+          <Route path="/:league/fixtures" element={<FixturesPage />} />
+          <Route path="/:league/fixtures/:matchId" element={<MatchDetails />} />
+          <Route path="/xg-calculator" element={<XGCalculator />} />
+        </Routes>
       </main>
     </div>
   );

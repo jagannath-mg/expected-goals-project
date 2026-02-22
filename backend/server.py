@@ -1,4 +1,70 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import joblib
+import pandas as pd
+import xgboost as xgb
 
+app = Flask(__name__)
+CORS(app)
+
+# Load model
+model = joblib.load("XG_Model.pkl")
+
+# Extract feature names from model
+try:
+    feature_names = model.feature_names_in_
+except:
+    feature_names = list(model.get_booster().feature_names)
+print(f"Model features: {feature_names}")  # Debug
+
+@app.route('/features', methods=['GET'])
+def get_features():
+    return jsonify({
+        'numeric': ['minute', 'x', 'y', 'distance_to_goal', 'angle_to_goal'],
+        'categorical': ['body_part', 'shot_type'], 
+        'binary': ['under_pressure'],
+        'all_features': feature_names,
+        'importance': {name: float(val) for name, val in zip(feature_names, model.feature_importances_)}
+    })
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.json
+    sample = pd.DataFrame([data])
+    sample = pd.get_dummies(sample)  # Handle categoricals
+    sample = sample.reindex(columns=feature_names, fill_value=0)  # Match model order
+    
+    xg = model.predict_proba(sample)[0][1]
+    
+    # NEW: Rule-based reasons for low xG (< 0.1)
+    reasons = []
+    if xg < 0.1:
+        dist = data.get('distance_to_goal', 0)
+        angle = data.get('angle_to_goal', 0)
+        body = data.get('body_part', '').lower()
+        pressure = data.get('under_pressure', 0)
+        
+        if dist > 25:
+            reasons.append("long distance")
+        if angle < 0.5 or angle > 0.9:  # Difficult angles on 0-1 scale
+            reasons.append("difficult angle")
+        if 'left foot' in body:  # Weak foot example (customize if needed)
+            reasons.append("weak foot")
+        if 'head' in body:
+            reasons.append("header used")
+        if pressure == 1:
+            reasons.append("under pressure")
+    
+    return jsonify({
+        "xg": float(xg),
+        "reasons": reasons if reasons else None
+    })
+
+if __name__ == "__main__":
+    app.run(host='127.0.0.1', port=5000, debug=True)
+
+'''
+//Without feature importance and reasons 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
@@ -41,6 +107,7 @@ def predict():
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=5000, debug=True)
 
+'''
 '''
 #NEWWWWWWWWWWWWW
 from flask import Flask, request, jsonify

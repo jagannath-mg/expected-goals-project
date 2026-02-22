@@ -28,8 +28,17 @@ const styles = `
     cursor: pointer; box-shadow: 0 10px 30px rgba(102,126,234,0.4);
   }
   .result-card { 
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; 
     padding: 32px; border-radius: 20px; text-align: center; margin-top: 20px;
+  }
+  .low-xg-card { 
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%); color: white; 
+  }
+  .high-xg-card { 
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; 
+  }
+  .reasons { 
+    margin-top: 16px; font-size: 1.1rem; font-weight: 600; 
+    background: rgba(255,255,255,0.2); padding: 12px; border-radius: 12px;
   }
 `;
 
@@ -37,7 +46,7 @@ export default function XGCalculator() {
   const [form, setForm] = useState({
     minute: 34, 
     x: 102, 
-    y: 40, // Y position added here
+    y: 40,
     distance_to_goal: 12.5, 
     angle_to_goal: 0.8,
     body_part: "Right Foot", 
@@ -64,7 +73,7 @@ export default function XGCalculator() {
         }),
       });
       const data = await response.json();
-      setResult(data.xg);
+      setResult(data);  // Now {xg, reasons}
     } catch (err) {
       alert("Backend connection failed - Is server.py running on port 5000?");
     }
@@ -96,7 +105,7 @@ export default function XGCalculator() {
               <span>{form.x}</span>
             </div>
 
-            {/* Y Position Slider (NEW) */}
+            {/* Y Position Slider */}
             <div className="input-group">
               <label>Y Position <span>(Center is 40)</span></label>
               <input type="range" min="0" max="80" value={form.y} onChange={e => setForm({...form, y: e.target.value})} />
@@ -149,10 +158,15 @@ export default function XGCalculator() {
             {loading ? "Calculating..." : "Predict xG"}
           </button>
 
-          {result !== null && (
-            <div className="result-card">
-              <h2>🎯 Predicted xG: <span>{result.toFixed(4)}</span></h2>
+          {result && (
+            <div className={`result-card ${result.xg < 0.1 ? 'low-xg-card' : 'high-xg-card'}`}>
+              <h2>🎯 Predicted xG: <span>{result.xg.toFixed(4)}</span></h2>
               <p>Likelihood of this shot being a goal</p>
+              {result.reasons && result.reasons.length > 0 && (
+                <div className="reasons">
+                  📉 Low xG due to: <strong>{result.reasons.join(', ')}</strong>
+                </div>
+              )}
             </div>
           )}
         </div>

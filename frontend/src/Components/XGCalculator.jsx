@@ -48,7 +48,7 @@ export default function XGCalculator() {
     x: 102, 
     y: 40,
     distance_to_goal: 12.5, 
-    angle_to_goal: 0.8,
+    angle_to_goal: 45,  // CHANGED: Default to 45° instead of 0.8
     body_part: "Right Foot", 
     shot_type: "Open Play", 
     under_pressure: 1
@@ -68,7 +68,7 @@ export default function XGCalculator() {
           x: Number(form.x), 
           y: Number(form.y), 
           distance_to_goal: Number(form.distance_to_goal), 
-          angle_to_goal: Number(form.angle_to_goal),
+          angle_to_goal: Number(form.angle_to_goal),  // SENDS DEGREES
           under_pressure: Number(form.under_pressure)
         }),
       });
@@ -119,11 +119,11 @@ export default function XGCalculator() {
               <span>{form.distance_to_goal}m</span>
             </div>
 
-            {/* Angle Slider */}
+            {/* ANGLE SLIDER - NOW DEGREES! */}
             <div className="input-group">
-              <label>Angle to Goal <span>(0-1)</span></label>
-              <input type="range" min="0" max="1" step="0.01" value={form.angle_to_goal} onChange={e => setForm({...form, angle_to_goal: e.target.value})} />
-              <span>{(form.angle_to_goal * 100).toFixed(0)}%</span>
+              <label>Angle to Goal <span>(degrees)</span></label>  {/* CHANGED LABEL */}
+              <input type="range" min="0" max="180" step="1" value={form.angle_to_goal} onChange={e => setForm({...form, angle_to_goal: e.target.value})} />  {/* CHANGED RANGE */}
+              <span>{form.angle_to_goal}°</span>  {/* CHANGED DISPLAY */}
             </div>
 
             {/* Body Part Dropdown */}

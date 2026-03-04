@@ -105,9 +105,9 @@ function App() {
       }}>
         <img src="/Logo.svg" alt="Man City" style={{ height: '45px' }} />
         <nav style={{ display: 'flex', gap: '1.5rem', marginLeft: 'auto' }}>
-          <Link to="/" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}>🏠 Home</Link>
-          <Link to="/leagues" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>🏆 Leagues</Link>
-          <Link to="/xg-calculator" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>⚽ xG Calc</Link>
+          <Link to="/" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}><b> Home</b></Link>
+          <Link to="/leagues" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}> Leagues</Link>
+          <Link to="/xg-calculator" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}> xG Calc</Link>
           <Link to="/players" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>Players</Link>
           <Link to="/club" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}>Club</Link>
         </nav>

@@ -85,8 +85,8 @@ export default function XGCalculator() {
       <style>{styles}</style>
       <div className="xg-app-container">
         <header className="xg-header">
-          <h1>⚽ Advanced xG Calculator</h1>
-          <p>AUC 0.75 | LogLoss 0.31 | Powered by XGBoost</p>
+          <h1> xG Calculator</h1>
+          <p>AUC 0.75 | LogLoss 0.31</p>
         </header>
 
         <div className="xg-container">

@@ -1,100 +1,48 @@
-const Loader = () => {
-  return (
-    <div>
-      <svg
-        height="108px"
-        width="108px"
-        viewBox="0 0 128 128"
-        className="loader"
-      >
-        <defs>
-          <clipPath id="loader-eyes">
-            <circle
-              transform="rotate(-40,64,64) translate(0,-56)"
-              r="8"
-              cy="64"
-              cx="64"
-              className="loader__eye1"
-            />
-            <circle
-              transform="rotate(40,64,64) translate(0,-56)"
-              r="8"
-              cy="64"
-              cx="64"
-              className="loader__eye2"
-            />
-          </clipPath>
-          <linearGradient y2="1" x2="0" y1="0" x1="0" id="loader-grad">
-            <stop stopColor="#000" offset="0%" />
-            <stop stopColor="#fff" offset="100%" />
-          </linearGradient>
-          <mask id="loader-mask">
-            <rect
-              fill="url(#loader-grad)"
-              height="128"
-              width="128"
-              y="0"
-              x="0"
-            />
-          </mask>
-        </defs>
-        <g
-          strokeDasharray="175.93 351.86"
-          strokeWidth="12"
-          strokeLinecap="round"
-        >
-          <g>
-            <rect
-              clipPath="url(#loader-eyes)"
-              height="64"
-              width="128"
-              fill="hsl(193,90%,50%)"
-            />
-            <g stroke="hsl(193,90%,50%)" fill="none">
-              <circle
-                transform="rotate(180,64,64)"
-                r="56"
-                cy="64"
-                cx="64"
-                className="loader__mouth1"
-              />
-              <circle
-                transform="rotate(0,64,64)"
-                r="56"
-                cy="64"
-                cx="64"
-                className="loader__mouth2"
-              />
-            </g>
-          </g>
-          <g mask="url(#loader-mask)">
-            <rect
-              clipPath="url(#loader-eyes)"
-              height="64"
-              width="128"
-              fill="hsl(223,90%,50%)"
-            />
-            <g stroke="hsl(223,90%,50%)" fill="none">
-              <circle
-                transform="rotate(180,64,64)"
-                r="56"
-                cy="64"
-                cx="64"
-                className="loader__mouth1"
-              />
-              <circle
-                transform="rotate(0,64,64)"
-                r="56"
-                cy="64"
-                cx="64"
-                className="loader__mouth2"
-              />
-            </g>
-          </g>
-        </g>
-      </svg>
+const Loader = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+    {/* Animated football */}
+    <div style={{ position: 'relative', width: '64px', height: '64px' }}>
+      <div style={{
+        width: '64px', height: '64px', borderRadius: '50%',
+        border: '3px solid #1e2535',
+        borderTop: '3px solid #3b82f6',
+        borderRight: '3px solid #10b981',
+        animation: 'spin 1s linear infinite',
+      }} />
+      <span style={{
+        position: 'absolute', inset: 0, display: 'flex',
+        alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem'
+      }}>⚽</span>
     </div>
-  );
-};
+
+    <div style={{ textAlign: 'center' }}>
+      <div style={{
+        fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9',
+        letterSpacing: '0.15em', marginBottom: '0.4rem'
+      }}>
+        xG ANALYZER
+      </div>
+      <div style={{ fontSize: '0.8rem', color: '#64748b', letterSpacing: '0.1em' }}>
+        LOADING SQUAD...
+      </div>
+    </div>
+
+    {/* Progress bar */}
+    <div style={{ width: '160px', height: '3px', background: '#1e2535', borderRadius: '2px', overflow: 'hidden' }}>
+      <div style={{
+        height: '100%', width: '40%',
+        background: 'linear-gradient(90deg, #3b82f6, #10b981)',
+        borderRadius: '2px',
+        animation: 'progress 1.4s ease-in-out infinite',
+      }} />
+    </div>
+
+    <style>{`
+      @keyframes spin     { to { transform: rotate(360deg); } }
+      @keyframes progress { 0% { transform: translateX(-100%); width: 40%; }
+                            100% { transform: translateX(400%); width: 40%; } }
+    `}</style>
+  </div>
+);
 
 export default Loader;

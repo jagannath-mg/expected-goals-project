@@ -1,126 +1,259 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import XGCalculator    from './Components/XGCalculator';
+import Loader          from './Components/Loader';
+import FixturesPage    from './pages/FixturesPage';
+import LeagueSelector  from './pages/LeagueSelector';
+import MatchDetails    from './pages/MatchDetails';
 
-// 1. Imports from your Components folder
-import XGCalculator from "./Components/XGCalculator"; 
-import Loader from './Components/Loader';
+const NAV_LINKS = [
+  { to: '/',              label: 'Home'     },
+  { to: '/leagues',       label: 'Leagues'  },
+  { to: '/xg-calculator', label: 'xG Calc'  },
+  { to: '/video-xg',      label: 'Video xG' },
+];
 
-// 2. Imports from your Pages folder
-import FixturesPage from './pages/FixturesPage';
-import LeagueSelector from './pages/LeagueSelector';
-import MatchDetails from './pages/MatchDetails';
-import PlayersHomePage from './pages/PlayersHomePage';
-import PlayerPage from './pages/PlayerPage';
+const Navbar = () => {
+  const { pathname } = useLocation();
+  const [scrolled, setScrolled] = useState(false);
 
-// 3. Local Page Components
-const HomePage = () => (
-  <div style={{padding: '1rem 2rem 0 2rem', textAlign: 'center', minHeight: '80vh'}}>
-    <h1 style={{
-      fontSize: 'clamp(3rem, 8vw, 6rem)',
-      fontWeight: 900,
-      background: 'linear-gradient(135deg, #ffd700 0%, #ffed4a 50%, #ffa500 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      textShadow: '0 0 30px rgba(255,215,0,0.5)',
-      letterSpacing: '-0.02em',
-      marginBottom: '4rem',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    }}> xG Analyzer</h1>
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
 
-    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', maxWidth: '1000px', margin: '0 auto'}}>
-      <Link to="/leagues" style={{
-        background: `linear-gradient(rgba(80, 64, 64, 0.9), rgba(234,88,12,0.9)), url("/Box_bg.png") center/cover`,
-        padding: '3rem',
-        borderRadius: '20px',
-        color: 'white',
-        textDecoration: 'none',
-        boxShadow: '0 20px 40px rgba(220,38,38,0.4)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1, borderRadius: '20px' }}></div>
-        <div style={{position: 'relative', zIndex: 2}}>
-          <h2 style={{margin: '0 0 1rem 0', fontSize: '2rem'}}> League Stats</h2>
-          <p style={{margin: 0, fontSize: '1.1rem'}}>Premier League, LaLiga, Bundesliga<br/>xG analytics</p>
-        </div>
+  return (
+    <header style={{
+      position: 'sticky', top: 0, zIndex: 100,
+      background: scrolled ? 'rgba(13,15,20,0.95)' : '#0d0f14',
+      backdropFilter: scrolled ? 'blur(12px)' : 'none',
+      borderBottom: '1px solid #252d3d',
+      transition: 'all 0.3s ease',
+      height: '60px',
+      display: 'flex', alignItems: 'center',
+      padding: '0 2rem', gap: '2rem',
+    }}>
+      <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <span style={{ fontSize: '1.3rem' }}>⚽</span>
+        <span style={{
+          fontWeight: 800, fontSize: '1rem', letterSpacing: '0.05em',
+          background: 'linear-gradient(90deg, #3b82f6, #10b981)',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+        }}>xG ANALYZER</span>
       </Link>
 
-      <Link to="/xg-calculator" style={{
-        background: 'linear-gradient(45deg, #059669, #10b981)', 
-        padding: '3rem', borderRadius: '20px', color: 'white', textDecoration: 'none',
-        boxShadow: '0 20px 40px rgba(5,150,105,0.3)'
-      }}>
-        <h2 style={{margin: '0 0 1rem 0'}}>⚽ Manual xG Calculator</h2>
-        <p>Shot distance, angle, type → Instant xG<br/>Interactive pitch visualizer</p>
-      </Link>
+      <nav style={{ display: 'flex', gap: '0.25rem', marginLeft: 'auto' }}>
+        {NAV_LINKS.map(({ to, label }) => {
+          const active = pathname === to || (to !== '/' && pathname.startsWith(to));
+          return (
+            <Link key={to} to={to} style={{
+              padding: '0.4rem 0.9rem', borderRadius: '6px', textDecoration: 'none',
+              fontSize: '0.9rem', fontWeight: 600,
+              color:      active ? '#f1f5f9' : '#64748b',
+              background: active ? '#1e2535' : 'transparent',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => { if (!active) e.currentTarget.style.color = '#f1f5f9'; }}
+            onMouseLeave={e => { if (!active) e.currentTarget.style.color = '#64748b'; }}
+            >
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+    </header>
+  );
+};
+
+// ── Coming Soon placeholder for Video xG page ──────────
+const VideoXGPage = () => (
+  <div className="page-enter" style={{ maxWidth: '700px', margin: '0 auto', padding: '5rem 1.5rem', textAlign: 'center' }}>
+    <div style={{
+      width: '72px', height: '72px', borderRadius: '18px', margin: '0 auto 1.5rem',
+      background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem'
+    }}>🎬</div>
+    <div style={{ fontSize: '0.75rem', color: '#7c3aed', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '0.75rem' }}>
+      COMING SOON
+    </div>
+    <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
+      Video xG Analysis
+    </h1>
+    <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 2rem' }}>
+      Upload a match video and automatically detect shots, extract frame-level features, and predict xG for each attempt using your trained model.
+    </p>
+    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+      {['Shot Detection', 'Frame Extraction', 'Auto xG Prediction', 'YOLOv8 + CV'].map(tag => (
+        <span key={tag} style={{
+          padding: '0.35rem 0.8rem', borderRadius: '999px', fontSize: '0.8rem',
+          background: '#1e2535', border: '1px solid #7c3aed40', color: '#a78bfa', fontWeight: 600,
+        }}>{tag}</span>
+      ))}
     </div>
   </div>
 );
 
-// --- NOTE: THE DUPLICATE XGCALCULATOR FUNCTION WAS REMOVED FROM HERE ---
+// ── Home Page ───────────────────────────────────────────
+const HomePage = () => (
+  <div className="page-enter" style={{ maxWidth: '1100px', margin: '0 auto', padding: '3rem 2rem' }}>
+    <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+      <div style={{
+        display: 'inline-block', padding: '0.3rem 0.9rem', borderRadius: '999px',
+        background: '#1e2535', border: '1px solid #252d3d',
+        fontSize: '0.8rem', color: '#3b82f6', fontWeight: 600,
+        letterSpacing: '0.1em', marginBottom: '1.5rem'
+      }}>
+        POWERED BY ML MODEL + STATSBOMB DATA
+      </div>
+      <h1 style={{
+        fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 900,
+        letterSpacing: '-0.03em', lineHeight: 1.1,
+        background: 'linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%)',
+        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+        marginBottom: '1rem'
+      }}>
+        Expected Goals<br />Analytics
+      </h1>
+      <p style={{ color: '#64748b', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto' }}>
+        Analyse shots, predict xG, and explore league data powered by your trained ML model.
+      </p>
+    </div>
 
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+
+      {/* League Stats */}
+      <Link to="/leagues" style={{ textDecoration: 'none' }}>
+        <div style={{
+          background: '#161b26', border: '1px solid #252d3d', borderRadius: '16px',
+          padding: '2rem', cursor: 'pointer', transition: 'all 0.25s ease', height: '100%',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#3b82f6'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(59,130,246,0.15)'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = '#252d3d'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+        >
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '12px',
+            background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.4rem', marginBottom: '1.25rem'
+          }}>🏆</div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: '#f1f5f9' }}>League Stats</h2>
+          <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+            Premier League, La Liga, Bundesliga — real match xG powered by your model.
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {['EPL', 'La Liga', 'Bundesliga'].map(t => (
+              <span key={t} style={{
+                padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.75rem',
+                background: '#1e2535', border: '1px solid #252d3d', color: '#94a3b8'
+              }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </Link>
+
+      {/* xG Calculator */}
+      <Link to="/xg-calculator" style={{ textDecoration: 'none' }}>
+        <div style={{
+          background: '#161b26', border: '1px solid #252d3d', borderRadius: '16px',
+          padding: '2rem', cursor: 'pointer', transition: 'all 0.25s ease', height: '100%',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#10b981'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(16,185,129,0.15)'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = '#252d3d'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+        >
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '12px',
+            background: 'linear-gradient(135deg, #065f46, #10b981)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.4rem', marginBottom: '1.25rem'
+          }}>⚽</div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: '#f1f5f9' }}>Manual xG Calculator</h2>
+          <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+            Input shot details — distance, angle, body part — and get instant xG prediction.
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {['AUC 0.75', 'LogLoss 0.31', 'XGBoost'].map(t => (
+              <span key={t} style={{
+                padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.75rem',
+                background: '#1e2535', border: '1px solid #252d3d', color: '#94a3b8'
+              }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </Link>
+
+      {/* Video xG — NEW */}
+      <Link to="/video-xg" style={{ textDecoration: 'none' }}>
+        <div style={{
+          background: '#161b26', border: '1px solid #252d3d', borderRadius: '16px',
+          padding: '2rem', cursor: 'pointer', transition: 'all 0.25s ease', height: '100%',
+          position: 'relative', overflow: 'hidden',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#a855f7'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(168,85,247,0.15)'; }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = '#252d3d'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+        >
+          {/* Coming soon badge */}
+          <div style={{
+            position: 'absolute', top: '1rem', right: '1rem',
+            padding: '0.2rem 0.55rem', borderRadius: '999px', fontSize: '0.65rem',
+            background: '#2e1065', border: '1px solid #7c3aed',
+            color: '#a78bfa', fontWeight: 700, letterSpacing: '0.08em'
+          }}>
+            COMING SOON
+          </div>
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '12px',
+            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.4rem', marginBottom: '1.25rem'
+          }}>🎬</div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: '#f1f5f9' }}>Video xG Analysis</h2>
+          <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+            Upload match video — auto-detect shots and predict xG for each attempt using computer vision.
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {['Shot Detection', 'Frame Extraction', 'YOLOv8'].map(t => (
+              <span key={t} style={{
+                padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.75rem',
+                background: '#1e2535', border: '1px solid #7c3aed40', color: '#a78bfa'
+              }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </Link>
+
+    </div>
+  </div>
+);
+
+// ── App ─────────────────────────────────────────────────
 function App() {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
+    const t = setTimeout(() => setShowSplash(false), 2800);
     return () => clearTimeout(t);
   }, []);
 
   if (showSplash) {
     return (
       <div className="splash-screen">
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '1rem',
-          color: '#ffffffff',
-          textAlign: 'center',
-        }}>
-          <h1 style={{ margin: 0, fontSize: '1.5rem' }}>LOADING SQUAD...</h1>
-          <Loader />
-        </div>
+        <Loader />
       </div>
     );
   }
 
   return (
-    <div>
-      <header style={{
-        background: 'linear-gradient(90deg, #ffffffff 0%, #0057B8 100%)',
-        height: '70px',
-        padding: '0 2rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '2rem',
-        boxShadow: '0 4px 12px rgba(176, 176, 250, 1)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-      }}>
-        <img src="/Logo.svg" alt="Man City" style={{ height: '45px' }} />
-        <nav style={{ display: 'flex', gap: '1.5rem', marginLeft: 'auto' }}>
-          <Link to="/" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}><b> Home</b></Link>
-          <Link to="/leagues" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}> Leagues</Link>
-          <Link to="/xg-calculator" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}> xG Calc</Link>
-          <Link to="/players" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 600 }}>Players</Link>
-          <Link to="/club" style={{ color: 'Ivory', textDecoration: 'none', fontWeight: 500 }}>Club</Link>
-        </nav>
-      </header>
-
-      <main style={{ padding: '1.5rem' }}>
+    <div style={{ minHeight: '100vh', background: '#0d0f14' }}>
+      <Navbar />
+      <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/players" element={<PlayersHomePage />} />
-          <Route path="/leagues" element={<LeagueSelector />} />
-          <Route path="/:league/fixtures" element={<FixturesPage />} />
-          <Route path="/:league/fixtures/:matchId" element={<MatchDetails />} />
-          <Route path="/xg-calculator" element={<XGCalculator />} />
+          <Route path="/"                        element={<HomePage />} />
+          <Route path="/leagues"                 element={<LeagueSelector />} />
+          <Route path="/:league/fixtures"        element={<FixturesPage />} />
+          <Route path="/:league/match/:match_id" element={<MatchDetails />} />
+          <Route path="/xg-calculator"           element={<XGCalculator />} />
+          <Route path="/video-xg"                element={<VideoXGPage />} />
         </Routes>
       </main>
     </div>

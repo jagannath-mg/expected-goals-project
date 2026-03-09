@@ -34,13 +34,18 @@ const Navbar = () => {
       display: 'flex', alignItems: 'center',
       padding: '0 2rem', gap: '2rem',
     }}>
-      <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <span style={{ fontSize: '1.3rem' }}>⚽</span>
+      {/* ✅ Logo image replaces emoji */}
+      <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <img
+          src="/xg_logo.png"
+          alt="xG Analyzer"
+          style={{ height: '34px', width: '34px', borderRadius: '8px', objectFit: 'cover' }}
+        />
         <span style={{
           fontWeight: 800, fontSize: '1rem', letterSpacing: '0.05em',
           background: 'linear-gradient(90deg, #3b82f6, #10b981)',
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
-        }}>xG ANALYZER</span>
+        }}>ANALYZER</span>
       </Link>
 
       <nav style={{ display: 'flex', gap: '0.25rem', marginLeft: 'auto' }}>
@@ -66,7 +71,6 @@ const Navbar = () => {
   );
 };
 
-// ── Coming Soon placeholder for Video xG page ──────────
 const VideoXGPage = () => (
   <div className="page-enter" style={{ maxWidth: '700px', margin: '0 auto', padding: '5rem 1.5rem', textAlign: 'center' }}>
     <div style={{
@@ -94,7 +98,6 @@ const VideoXGPage = () => (
   </div>
 );
 
-// ── Home Page ───────────────────────────────────────────
 const HomePage = () => (
   <div className="page-enter" style={{ maxWidth: '1100px', margin: '0 auto', padding: '3rem 2rem' }}>
     <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
@@ -182,7 +185,7 @@ const HomePage = () => (
         </div>
       </Link>
 
-      {/* Video xG — NEW */}
+      {/* Video xG */}
       <Link to="/video-xg" style={{ textDecoration: 'none' }}>
         <div style={{
           background: '#161b26', border: '1px solid #252d3d', borderRadius: '16px',
@@ -192,7 +195,6 @@ const HomePage = () => (
         onMouseEnter={e => { e.currentTarget.style.borderColor = '#a855f7'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(168,85,247,0.15)'; }}
         onMouseLeave={e => { e.currentTarget.style.borderColor = '#252d3d'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
         >
-          {/* Coming soon badge */}
           <div style={{
             position: 'absolute', top: '1rem', right: '1rem',
             padding: '0.2rem 0.55rem', borderRadius: '999px', fontSize: '0.65rem',
@@ -226,7 +228,6 @@ const HomePage = () => (
   </div>
 );
 
-// ── App ─────────────────────────────────────────────────
 function App() {
   const [showSplash, setShowSplash] = useState(true);
 

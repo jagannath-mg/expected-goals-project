@@ -1,112 +1,66 @@
-.loader {
-  width: 8em;
-  height: 8em;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d0f14;
+  --surface:   #161b26;
+  --surface2:  #1e2535;
+  --border:    #252d3d;
+  --accent:    #3b82f6;
+  --accent2:   #10b981;
+  --text:      #f1f5f9;
+  --muted:     #64748b;
+  --danger:    #ef4444;
+  --warning:   #f59e0b;
 }
 
-.loader__eye1,
-.loader__eye2,
-.loader__mouth1,
-.loader__mouth2 {
-  animation: eye1 3s ease-in-out infinite;
+html, body, #root {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-.loader__eye1,
-.loader__eye2 {
-  transform-origin: 64px 64px;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-.loader__eye2 {
-  animation-name: eye2;
-}
-
-.loader__mouth1 {
-  animation-name: mouth1;
-}
-
-.loader__mouth2 {
-  animation-name: mouth2;
-  visibility: hidden;
-}
-
-@keyframes eye1 {
-  from {
-    transform: rotate(-260deg) translate(0, -56px);
-  }
-  50%,
-  60% {
-    animation-timing-function: cubic-bezier(0.17, 0, 0.58, 1);
-    transform: rotate(-40deg) translate(0, -56px) scale(1);
-  }
-  to {
-    transform: rotate(225deg) translate(0, -56px) scale(0.35);
-  }
-}
-
-@keyframes eye2 {
-  from {
-    transform: rotate(-260deg) translate(0, -56px);
-  }
-  50% {
-    transform: rotate(40deg) translate(0, -56px) rotate(-40deg) scale(1);
-  }
-  52.5% {
-    transform: rotate(40deg) translate(0, -56px) rotate(-40deg) scale(1, 0);
-  }
-  55%,
-  70% {
-    animation-timing-function: cubic-bezier(0, 0, 0.28, 1);
-    transform: rotate(40deg) translate(0, -56px) rotate(-40deg) scale(1);
-  }
-  to {
-    transform: rotate(150deg) translate(0, -56px) scale(0.4);
-  }
-}
-
-@keyframes mouth1 {
-  from {
-    animation-timing-function: ease-in;
-    stroke-dasharray: 0 351.86;
-    stroke-dashoffset: 0;
-  }
-  25% {
-    animation-timing-function: ease-out;
-    stroke-dasharray: 175.93 351.86;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    animation-timing-function: steps(1, start);
-    stroke-dasharray: 175.93 351.86;
-    stroke-dashoffset: -175.93;
-    visibility: visible;
-  }
-  75%,
-  to {
-    visibility: hidden;
-  }
-}
-
-@keyframes mouth2 {
-  from {
-    animation-timing-function: steps(1, end);
-    visibility: hidden;
-  }
-  50% {
-    animation-timing-function: ease-in-out;
-    visibility: visible;
-    stroke-dashoffset: 0;
-  }
-  to {
-    stroke-dashoffset: -351.86;
-  }
-}
+/* Splash screen */
 .splash-screen {
-  position: fixed;          /* cover whole window */
-  inset: 0;                 /* top:0; right:0; bottom:0; left:0 */
-  z-index: 9999;            /* above everything */
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
   display: flex;
-  align-items: center;      /* vertical center */
-  justify-content: center;  /* horizontal center */
-  background: #020617;      /* splash background color */
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
 }
-/*playerpage bg*/ 
 
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
+
+/* Page fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: fadeIn 0.35s ease forwards;
+}
+
+/* Pulse dot for live */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+.pulse { animation: pulse 1.5s infinite; }

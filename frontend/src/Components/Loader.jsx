@@ -1,6 +1,7 @@
 const Loader = () => (
   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-    {/* Animated football */}
+
+    {/* Spinning ring + logo */}
     <div style={{ position: 'relative', width: '64px', height: '64px' }}>
       <div style={{
         width: '64px', height: '64px', borderRadius: '50%',
@@ -9,10 +10,19 @@ const Loader = () => (
         borderRight: '3px solid #10b981',
         animation: 'spin 1s linear infinite',
       }} />
-      <span style={{
-        position: 'absolute', inset: 0, display: 'flex',
-        alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem'
-      }}>⚽</span>
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <img
+          src="/xg_logo.png"
+          alt="xG Analyzer"
+          style={{
+            width: '42px', height: '42px',
+            borderRadius: '10px', objectFit: 'cover',
+          }}
+        />
+      </div>
     </div>
 
     <div style={{ textAlign: 'center' }}>
@@ -23,7 +33,7 @@ const Loader = () => (
         xG ANALYZER
       </div>
       <div style={{ fontSize: '0.8rem', color: '#64748b', letterSpacing: '0.1em' }}>
-        LOADING SQUAD...
+        LOADING...
       </div>
     </div>
 
@@ -39,8 +49,8 @@ const Loader = () => (
 
     <style>{`
       @keyframes spin     { to { transform: rotate(360deg); } }
-      @keyframes progress { 0% { transform: translateX(-100%); width: 40%; }
-                            100% { transform: translateX(400%); width: 40%; } }
+      @keyframes progress { 0%   { transform: translateX(-100%); width: 40%; }
+                            100% { transform: translateX(400%);  width: 40%; } }
     `}</style>
   </div>
 );

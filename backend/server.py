@@ -11,26 +11,21 @@ CORS(app)
 
 model = joblib.load("XG_Model.pkl")
 
-try:
-    feature_names = model.feature_names_in_
-except:
-    feature_names = list(model.get_booster().feature_names)
+# Logistic Regression — use feature_names_in_ directly
+feature_names = list(model.feature_names_in_)
 
 print(f"Model features: {feature_names}")
 
-# Competition IDs per league
 LEAGUE_CONFIG = {
     'epl':        {'competition_id': 2,  'name': 'Premier League'},
     'laliga':     {'competition_id': 11, 'name': 'La Liga'},
     'bundesliga': {'competition_id': 9,  'name': 'Bundesliga'},
 }
 
-# La Liga limited to 5 newest full seasons — EPL & Bundesliga show all
 LEAGUE_SEASON_WHITELIST = {
     'epl':        None,
     'bundesliga': None,
     'laliga':     [90, 42, 4, 1, 2],
-    # 90=2020/21, 42=2019/20, 4=2018/19, 1=2017/18, 2=2016/17
 }
 
 
@@ -102,11 +97,11 @@ def predict_xg_for_shot(row):
 @app.route('/features', methods=['GET'])
 def get_features():
     return jsonify({
-        'numeric':     ['minute', 'x', 'y', 'distance_to_goal', 'angle_to_goal'],
-        'categorical': ['body_part', 'shot_type'],
-        'binary':      ['under_pressure'],
-        'all_features': feature_names,
-        'importance':  {name: float(val) for name, val in zip(feature_names, model.feature_importances_)}
+        'numeric':      ['minute', 'x', 'y', 'distance_to_goal', 'angle_to_goal'],
+        'categorical':  ['body_part', 'shot_type'],
+        'binary':       ['under_pressure'],
+        'all_features': list(feature_names),
+        'importance':   {name: float(abs(coef)) for name, coef in zip(feature_names, model.coef_[0])}
     })
 
 
@@ -151,12 +146,82 @@ def predict():
 
 
 # ─────────────────────────────────────────────
+# VIDEO XG ENDPOINT
+# ─────────────────────────────────────────────
+
+@app.route('/video/predict-frame', methods=['POST'])
+def predict_frame_xg():
+    """
+    Takes 3 clicked points (pixel coords) + shot metadata → returns xG.
+    point1 = shot location
+    point2 = left goalpost
+    point3 = right goalpost
+    Frame capture happens entirely in browser — no video upload needed.
+    """
+    data = request.json
+    try:
+        p1 = data['point1']
+        p2 = data['point2']
+        p3 = data['point3']
+
+        shot_x,  shot_y  = p1['x'], p1['y']
+        left_x,  left_y  = p2['x'], p2['y']
+        right_x, right_y = p3['x'], p3['y']
+
+        goal_x = (left_x + right_x) / 2
+        goal_y = (left_y + right_y) / 2
+
+        goal_width_pixels = math.sqrt((right_x - left_x)**2 + (right_y - left_y)**2)
+        if goal_width_pixels < 1:
+            return jsonify({'error': 'Goalposts too close — click more carefully'}), 400
+
+        pixel_to_meter  = 7.32 / goal_width_pixels
+        distance_meters = math.sqrt((goal_x - shot_x)**2 + (goal_y - shot_y)**2) * pixel_to_meter
+
+        d1 = math.sqrt((shot_x - left_x)**2  + (shot_y - left_y)**2)  * pixel_to_meter
+        d2 = math.sqrt((shot_x - right_x)**2 + (shot_y - right_y)**2) * pixel_to_meter
+        cos_angle = (d1**2 + d2**2 - 7.32**2) / (2 * d1 * d2)
+        cos_angle = max(-1.0, min(1.0, cos_angle))
+        angle_deg = math.degrees(math.acos(cos_angle))
+        angle_rad = math.radians(angle_deg)
+
+        body_part      = data.get('body_part',      'Right Foot')
+        shot_type      = data.get('shot_type',      'Open Play')
+        under_pressure = int(data.get('under_pressure', 0))
+
+        sample = pd.DataFrame([{
+            'minute':           45,
+            'x':                100,
+            'y':                40,
+            'distance_to_goal': distance_meters,
+            'angle_to_goal':    angle_rad,
+            'body_part':        body_part,
+            'shot_type':        shot_type,
+            'under_pressure':   under_pressure
+        }])
+
+        sample = pd.get_dummies(sample)
+        sample = sample.reindex(columns=feature_names, fill_value=0)
+        xg = float(model.predict_proba(sample)[0][1])
+
+        return jsonify({
+            'xg':              round(xg, 4),
+            'distance_meters': round(distance_meters, 1),
+            'angle_deg':       round(angle_deg, 1),
+        })
+
+    except KeyError as e:
+        return jsonify({'error': f'Missing field: {e}'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ─────────────────────────────────────────────
 # LEAGUE STATS ENDPOINTS
 # ─────────────────────────────────────────────
 
 @app.route('/league/<league_key>/seasons', methods=['GET'])
 def get_seasons(league_key):
-    """Return available seasons for a league — filtered by whitelist if set."""
     if league_key not in LEAGUE_CONFIG:
         return jsonify({'error': 'Unknown league'}), 404
     try:
@@ -183,7 +248,6 @@ def get_seasons(league_key):
 
 @app.route('/league/<league_key>/fixtures', methods=['GET'])
 def get_fixtures(league_key):
-    """Return all matches for a league + season."""
     if league_key not in LEAGUE_CONFIG:
         return jsonify({'error': 'Unknown league'}), 404
 
@@ -213,7 +277,6 @@ def get_fixtures(league_key):
 
 @app.route('/league/<league_key>/match/<int:match_id>', methods=['GET'])
 def get_match_xg(league_key, match_id):
-    """Return all shots with model-predicted xG for a specific match."""
     if league_key not in LEAGUE_CONFIG:
         return jsonify({'error': 'Unknown league'}), 404
 
@@ -229,11 +292,11 @@ def get_match_xg(league_key, match_id):
             return jsonify({
                 'home_team': '', 'away_team': '',
                 'home_xg': 0,   'away_xg': 0,
-                'home_shots': [],'away_shots': []
+                'home_shots': [], 'away_shots': []
             })
 
-        cfg     = LEAGUE_CONFIG[league_key]
-        matches = get_cached_matches(cfg['competition_id'], season_id)
+        cfg       = LEAGUE_CONFIG[league_key]
+        matches   = get_cached_matches(cfg['competition_id'], season_id)
         match_row = matches[matches['match_id'] == match_id].iloc[0]
         home_team = str(match_row['home_team'])
         away_team = str(match_row['away_team'])
@@ -260,17 +323,17 @@ def get_match_xg(league_key, match_id):
             player     = player_raw['name'] if isinstance(player_raw, dict) else str(player_raw)
 
             shot_data = {
-                'player':           player,
-                'minute':           int(shot.get('minute', 0)),
-                'x':                loc[0] if isinstance(loc, list) else 0,
-                'y':                loc[1] if isinstance(loc, list) else 40,
-                'outcome':          outcome,
-                'is_goal':          is_goal,
-                'body_part':        body_part,
-                'shot_type':        shot_type,
-                'under_pressure':   bool(shot.get('under_pressure', False)),
-                'model_xg':         predict_xg_for_shot(shot.to_dict()),
-                'statsbomb_xg':     round(float(shot.get('shot_statsbomb_xg', 0) or 0), 4),
+                'player':         player,
+                'minute':         int(shot.get('minute', 0)),
+                'x':              loc[0] if isinstance(loc, list) else 0,
+                'y':              loc[1] if isinstance(loc, list) else 40,
+                'outcome':        outcome,
+                'is_goal':        is_goal,
+                'body_part':      body_part,
+                'shot_type':      shot_type,
+                'under_pressure': bool(shot.get('under_pressure', False)),
+                'model_xg':       predict_xg_for_shot(shot.to_dict()),
+                'statsbomb_xg':   round(float(shot.get('shot_statsbomb_xg', 0) or 0), 4),
             }
 
             if team == home_team:

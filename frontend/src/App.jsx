@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import XGCalculator    from './Components/XGCalculator';
-import Loader          from './Components/Loader';
-import FixturesPage    from './pages/FixturesPage';
-import LeagueSelector  from './pages/LeagueSelector';
-import MatchDetails    from './pages/MatchDetails';
+import XGCalculator   from './Components/XGCalculator';
+import Loader         from './Components/Loader';
+import FixturesPage   from './pages/FixturesPage';
+import LeagueSelector from './pages/LeagueSelector';
+import MatchDetails   from './pages/MatchDetails';
+import VideoXGPage    from './pages/VideoXGPage';
+
 
 const NAV_LINKS = [
   { to: '/',              label: 'Home'     },
@@ -12,6 +14,7 @@ const NAV_LINKS = [
   { to: '/xg-calculator', label: 'xG Calc'  },
   { to: '/video-xg',      label: 'Video xG' },
 ];
+
 
 const Navbar = () => {
   const { pathname } = useLocation();
@@ -34,7 +37,6 @@ const Navbar = () => {
       display: 'flex', alignItems: 'center',
       padding: '0 2rem', gap: '2rem',
     }}>
-      {/* ✅ Logo image replaces emoji */}
       <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
         <img
           src="/xg_logo.png"
@@ -71,32 +73,6 @@ const Navbar = () => {
   );
 };
 
-const VideoXGPage = () => (
-  <div className="page-enter" style={{ maxWidth: '700px', margin: '0 auto', padding: '5rem 1.5rem', textAlign: 'center' }}>
-    <div style={{
-      width: '72px', height: '72px', borderRadius: '18px', margin: '0 auto 1.5rem',
-      background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem'
-    }}>🎬</div>
-    <div style={{ fontSize: '0.75rem', color: '#7c3aed', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '0.75rem' }}>
-      COMING SOON
-    </div>
-    <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#f1f5f9', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
-      Video xG Analysis
-    </h1>
-    <p style={{ color: '#64748b', fontSize: '1rem', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 2rem' }}>
-      Upload a match video and automatically detect shots, extract frame-level features, and predict xG for each attempt using your trained model.
-    </p>
-    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-      {['Shot Detection', 'Frame Extraction', 'Auto xG Prediction', 'YOLOv8 + CV'].map(tag => (
-        <span key={tag} style={{
-          padding: '0.35rem 0.8rem', borderRadius: '999px', fontSize: '0.8rem',
-          background: '#1e2535', border: '1px solid #7c3aed40', color: '#a78bfa', fontWeight: 600,
-        }}>{tag}</span>
-      ))}
-    </div>
-  </div>
-);
 
 const HomePage = () => (
   <div className="page-enter" style={{ maxWidth: '1100px', margin: '0 auto', padding: '3rem 2rem' }}>
@@ -175,7 +151,7 @@ const HomePage = () => (
             Input shot details — distance, angle, body part — and get instant xG prediction.
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {['AUC 0.75', 'LogLoss 0.31', 'XGBoost'].map(t => (
+            {['AUC 0.75', 'LogLoss 0.31', 'Logistic Regression'].map(t => (
               <span key={t} style={{
                 padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.75rem',
                 background: '#1e2535', border: '1px solid #252d3d', color: '#94a3b8'
@@ -196,14 +172,6 @@ const HomePage = () => (
         onMouseLeave={e => { e.currentTarget.style.borderColor = '#252d3d'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
         >
           <div style={{
-            position: 'absolute', top: '1rem', right: '1rem',
-            padding: '0.2rem 0.55rem', borderRadius: '999px', fontSize: '0.65rem',
-            background: '#2e1065', border: '1px solid #7c3aed',
-            color: '#a78bfa', fontWeight: 700, letterSpacing: '0.08em'
-          }}>
-            COMING SOON
-          </div>
-          <div style={{
             width: '44px', height: '44px', borderRadius: '12px',
             background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -211,10 +179,10 @@ const HomePage = () => (
           }}>🎬</div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem', color: '#f1f5f9' }}>Video xG Analysis</h2>
           <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-            Upload match video — auto-detect shots and predict xG for each attempt using computer vision.
+            Upload a match video, capture shot frames manually, mark goal points and get instant xG predictions.
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {['Shot Detection', 'Frame Extraction', 'YOLOv8'].map(t => (
+            {['Frame Capture', 'Point Marking', 'Logistic Regression'].map(t => (
               <span key={t} style={{
                 padding: '0.2rem 0.6rem', borderRadius: '999px', fontSize: '0.75rem',
                 background: '#1e2535', border: '1px solid #7c3aed40', color: '#a78bfa'
@@ -227,6 +195,7 @@ const HomePage = () => (
     </div>
   </div>
 );
+
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
